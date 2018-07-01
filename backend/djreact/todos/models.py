@@ -4,7 +4,6 @@ from django.db import models
 
 class Todo(models.Model):
     title = models.CharField(max_length=250)
-    description = models.TextField()
     creation_date = models.DateField(auto_now=True)
     due_date = models.DateField(blank=True, null=True)
     completed = models.BooleanField(default=False)
