@@ -1,5 +1,6 @@
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
+from tastypie.constants import ALL
 from tastypie import fields
 from .models import Todo
 
@@ -14,5 +15,6 @@ class TodoResource(ModelResource):
         resource_name = 'todo'
         authorization = Authorization()
         filtering = {
-            'title': ['icontains']
+            'title': ['icontains'],
+            'due_date': ALL
         }
