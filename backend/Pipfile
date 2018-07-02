@@ -8,6 +8,9 @@ name = "pypi"
 [packages]
 django = "*"
 django-tastypie = "*"
+requests = "*"
+django-extensions = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "2.7"
