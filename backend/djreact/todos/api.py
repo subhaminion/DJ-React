@@ -13,3 +13,6 @@ class TodoResource(ModelResource):
         queryset = Todo.objects.all()
         resource_name = 'todo'
         authorization = Authorization()
+        filtering = {
+            'title': ['icontains']
+        }
