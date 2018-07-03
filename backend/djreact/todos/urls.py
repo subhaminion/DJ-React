@@ -4,5 +4,5 @@ from todos.api import TodoResource
 entry_resource = TodoResource()
 
 urlpatterns = [
-    url(r'^api/', include(entry_resource.urls)),
+    url(r'^', include(entry_resource.urls)),
 ]

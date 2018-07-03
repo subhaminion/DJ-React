@@ -12,6 +12,7 @@ class Todo(models.Model):
     creation_date = models.DateField(auto_now=True)
     due_date = models.DateField(blank=True, null=True)
     completed = models.BooleanField(default=False)
+    sub_task = models.BooleanField(default=False)
     parent_task = models.ForeignKey(
         'self', related_name='subtask', blank=True, null=True)
 
