@@ -1,8 +1,5 @@
 $( document ).ready(function() {
-	// $('.dir').click(function(e) {
-	// 	e.stopPropagation();
-	// 	$(this).children().slideToggle();
-	// });
+	
 	$.ajax({
 		  type: 'GET',
 		  url: "http://127.0.0.1:8000/api/todo/",
@@ -10,7 +7,20 @@ $( document ).ready(function() {
 		  success: function(data) {
 		  	data.objects.forEach(function(item){
 		  		if (item.subtask != '') {
-		  			$(".toAppend").append("<li class='dir'>"+ item.title +"</li>");
+		  			$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"<ul></ul></li>");
+		  			item.subtask.forEach(function(index) {
+						subtaskFetchurl =  "http://127.0.0.1:8000" + index;
+
+		  				$.ajax({
+							  type: 'GET',
+							  url: subtaskFetchurl,
+							  contentType: "application/json;",
+							  dataType: 'json',
+							  success: function(data) {
+							  		$(".task_id" + item.id + " ul").append(" <li class='dir'>" + data.title + "</li>");
+							  },
+						});	  				
+		  			});
 		  		}
 		  	});
 		  },
@@ -19,6 +29,34 @@ $( document ).ready(function() {
 		  },
 	});
 });
+
+
+function getsubtask(taskId) {
+	fetchurl = "http://127.0.0.1:8000/api/todo/"+ taskId +"/";
+	var lol = [];
+	$.ajax({
+		  type: 'GET',
+		  url: fetchurl,
+		  contentType: "application/json;",
+		  dataType: 'json',
+		  success: function(data) {
+		  		data.subtask.forEach(function(item){
+		  			subtaskFetchurl = "http://127.0.0.1:8000" + item;
+			  		$.ajax({
+						  type: 'GET',
+						  url: subtaskFetchurl,
+						  contentType: "application/json;",
+						  dataType: 'json',
+						  success: function(data) {
+						  		lol.push(data);
+						  },
+					});
+			  	});
+		  },
+	});
+	return lol;
+}
+
 
 function addNewTodo(data) {
 	$.ajax({
@@ -51,12 +89,8 @@ $("#todo_add").on('keyup', function (e) {
 
 
 $(document).on('click','.dir', function(){
-    $('.dir').on('click', function () {
-    	$(this).children("ul").empty();
-    	$(this).append("<ul> <li class='dir'>lab1 </li> <li class='dir'>lab1 </li> <li class='dir'>lab1 </li> </ul>")
-        $('ul', this).slideDown();
-    });
-    $('.dir li').click(function(e) {
-        e.stopPropagation();
-    });
+   $('.dir').click(function(e) {
+		e.stopPropagation();
+		$(this).children().slideToggle();
+	});
 });
