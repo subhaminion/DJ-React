@@ -15,6 +15,7 @@ class Todo(models.Model):
     sub_task = models.BooleanField(default=False)
     parent_task = models.ForeignKey(
         'self', related_name='subtask', blank=True, null=True)
+    delete_time = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.title

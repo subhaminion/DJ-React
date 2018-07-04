@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
+from __future__ import absolute_import
 from django.http import HttpResponse
 from django.template import loader
-# Create your views here.
 
 
 def index(request):
