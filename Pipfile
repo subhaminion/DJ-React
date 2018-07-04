@@ -6,11 +6,7 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-django = "*"
-django-tastypie = "*"
-requests = "*"
-django-extensions = "*"
-django-cors-headers = "*"
+django = "==1.11.14"
 
 [requires]
 python_version = "2.7"

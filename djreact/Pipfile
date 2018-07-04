@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+django = "==1.11.14"
+celery = "==3.1.18"
+django-cors-headers = "*"
+redis = "==2.10.3"
+django-tastypie = "*"
+django-extensions = "*"
+
+[requires]
+python_version = "2.7"

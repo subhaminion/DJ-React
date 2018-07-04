@@ -1,2 +1,2 @@
-# DJ-React
-Todo List app with a Django backend and a React frontend.
+# DJ-Todo
+Todo List app with a Django.
