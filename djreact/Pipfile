@@ -12,6 +12,7 @@ django-cors-headers = "*"
 redis = "==2.10.3"
 django-tastypie = "*"
 django-extensions = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "2.7"
