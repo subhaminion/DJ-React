@@ -1,3 +1,5 @@
+var base_url = "http://127.0.0.1:8000/";
+
 function getshitdone(argument) {
 	console.log($(argument).text());
 	if ($(argument).text() === 'Completed'){
@@ -8,7 +10,7 @@ function getshitdone(argument) {
 
 
 	task_id = $(argument).attr('task_id');
-	taskupdateurl = "http://127.0.0.1:8080/api/todo/" + task_id + "/";
+	taskupdateurl = base_url + "api/todo/" + task_id + "/";
 	$.ajax({
 		  type: 'PATCH',
 		  url: taskupdateurl,
@@ -27,7 +29,7 @@ function deleteThis(argument) {
 	d = new Date();
 	date = d.toLocaleString();
 	task_id = $(argument).attr('task_id');
-	deleteurl = "http://127.0.0.1:8080/api/todo/" + task_id + "/";
+	deleteurl = base_url + "api/todo/" + task_id + "/";
 	if ($(argument).text() === 'Delete') {
 		data  = JSON.stringify({'delete_time': date});
 	}else{
@@ -53,7 +55,7 @@ $( document ).ready(function() {
 	
 	$.ajax({
 		  type: 'GET',
-		  url: "http://127.0.0.1:8080/api/todo/",
+		  url: base_url + "api/todo/",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	data.objects.forEach(function(item){
@@ -62,7 +64,7 @@ $( document ).ready(function() {
 		  			var deletebtntext = item.delete_time ? "Undelete" : "Delete";
 		  			$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>"+deletebtntext+"</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
 		  			item.subtask.forEach(function(index) {
-						subtaskFetchurl =  "http://127.0.0.1:8080" + index;
+						subtaskFetchurl =  base_url + index;
 
 		  				$.ajax({
 							  type: 'GET',
@@ -92,7 +94,7 @@ $( document ).ready(function() {
 function addNewTodo(data) {
 	$.ajax({
 		  type: 'POST',
-		  url: "http://127.0.0.1:8080/api/todo/",
+		  url: base_url + "api/todo/",
 		  data: JSON.stringify(data),
 		  contentType: "application/json;",
 		  success: function(data) {
@@ -136,7 +138,7 @@ $(document).on('keyup', '.addsubtask', function (e) {
 		
 		$.ajax({
 			  type: 'POST',
-			  url: "http://127.0.0.1:8080/api/todo/",
+			  url: base_url + "api/todo/",
 			  data: JSON.stringify(data),
 			  contentType: "application/json;",
 			  success: function(data) {
@@ -157,7 +159,7 @@ $(document).on('keyup','#search', function(e){
 	  	query = $('#search').val();
 	  	$.ajax({
 			  type: 'GET',
-			  url: "http://127.0.0.1:8080/api/todo/?title__icontains=" + query,
+			  url: base_url + "api/todo/?title__icontains=" + query,
 			  contentType: "application/json;",
 			  success: function(data) {
 			  	$('.toAppend li').remove();
@@ -177,7 +179,7 @@ $(document).on('click','#filterToday', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: "http://127.0.0.1:8080/api/todo/?due_date__day=" + dd,
+		  url: base_url + "api/todo/?due_date__day=" + dd,
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
@@ -204,7 +206,7 @@ $(document).on('click','#filterWeek', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: "http://127.0.0.1:8080/api/todo/?due_date__gte="+ today +"&due_date__lt=" + oneweekextra,
+		  url: base_url + "api/todo/?due_date__gte="+ today +"&due_date__lt=" + oneweekextra,
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
@@ -231,7 +233,7 @@ $(document).on('click','#filterNextweek', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: "http://127.0.0.1:8080/api/todo/?due_date__gte="+date+"&due_date__lt="+dateplus7+"",
+		  url: base_url + "api/todo/?due_date__gte="+date+"&due_date__lt="+dateplus7+"",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
@@ -255,7 +257,7 @@ $(document).on('click','#filterOverdue', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: "http://127.0.0.1:8080/api/todo/?due_date__lt="+ today +"",
+		  url: base_url + "api/todo/?due_date__lt="+ today +"",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
