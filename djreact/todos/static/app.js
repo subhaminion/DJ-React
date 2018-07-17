@@ -194,19 +194,9 @@ $(document).on('click','#filterToday', function(e){
  });
 
 $(document).on('click','#filterWeek', function(e){
-	var today = new Date();
-	var dd = today.getDate();
-	var mm = today.getMonth()+1;
-	var yyyy = today.getFullYear();
-	today = yyyy + '-' + mm + '-' + dd;
-	dd = dd + 7
-	oneweekextra = yyyy + '-' + mm + '-' + dd;
-
-
-
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/todo/?due_date__gte="+ today +"&due_date__lt=" + oneweekextra,
+		  url: base_url + "/api/todo/?due_date__gte=True",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);

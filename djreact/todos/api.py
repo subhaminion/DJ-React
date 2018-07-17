@@ -31,3 +31,9 @@ class TodoResource(ModelResource):
             parent_task = Todo.objects.get(id=parent_task_id)
             return super(TodoResource, self).obj_create(bundle, request=request, parent_task=parent_task)
         return super(TodoResource, self).obj_create(bundle, request=request, **kwargs)
+
+    def apply_filters(self, request, applicable_filters):
+        if applicable_filters.get('due_date__gte'):
+            thisWeek = datetime.datetime.utcnow().isocalendar()[1]
+            return Todo.objects.filter(due_date__week=thisWeek)  
+        return self.get_object_list(request).filter(**applicable_filters)
