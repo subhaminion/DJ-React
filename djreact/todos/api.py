@@ -4,18 +4,9 @@ from django.utils import timezone
 from tastypie import fields
 from tastypie.constants import ALL
 from tastypie.exceptions import BadRequest
-from tastypie.serializers import Serializer
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 from .models import Todo
-
-
-class RequestSerializer(Serializer):
-    def from_json(self, content):
-        try:
-            return json.loads(content)
-        except ValueError as e:
-            raise BadRequest(u"Incorrect JSON format: Reason: \"{}\"".format(e.message))
 
 
 class TodoResource(ModelResource):
@@ -25,7 +16,6 @@ class TodoResource(ModelResource):
     )
 
     class Meta:
-        serializer = RequestSerializer(formats=['json'])
         queryset = Todo.objects.all()
         resource_name = 'todo'
         authorization = Authorization()
