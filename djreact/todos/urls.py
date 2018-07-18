@@ -1,8 +1,13 @@
 from django.conf.urls import url, include
-from todos.api import TodoResource
+from tastypie.api import Api
+from todos.api import (
+	TodoResource, UserResource
+)
 
-entry_resource = TodoResource()
+api = Api(api_name='v1')
+api.register(UserResource(), canonical=True)
+api.register(TodoResource(), canonical=True)
 
 urlpatterns = [
-    url(r'^', include(entry_resource.urls)),
+    url(r'^', include(api.urls)),
 ]

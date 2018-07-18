@@ -1,12 +1,23 @@
 import json
 import datetime
-from django.utils import timezone
+from django.contrib.auth.models import User
 from tastypie import fields
 from tastypie.constants import ALL
 from tastypie.exceptions import BadRequest
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
+from tastypie.authentication import BasicAuthentication
 from .models import Todo
+
+
+class UserResource(ModelResource):
+    class Meta:
+        queryset = User.objects.all()
+        resource_name = "user"
+        excludes = ["email", "password", "is_active", "is_staff", "is_superuser"]
+        allowed_methods = ["get"]
+        authorization = DjangoAuthorization()
+        authentication = BasicAuthentication()
 
 
 class TodoResource(ModelResource):
@@ -18,7 +29,8 @@ class TodoResource(ModelResource):
     class Meta:
         queryset = Todo.objects.all()
         resource_name = 'todo'
-        authorization = Authorization()
+        authorization = DjangoAuthorization()
+        authentication = BasicAuthentication()
         filtering = {
             'title': ['icontains'],
             'due_date': ALL
@@ -30,7 +42,7 @@ class TodoResource(ModelResource):
             parent_task_id = bundle.data.get('parent_task')
             parent_task = Todo.objects.get(id=parent_task_id)
             subtask_duedate = datetime.datetime.strptime(bundle.data.get('due_date').encode(), "%Y-%m-%d").date()
-            
+
             if subtask_duedate > parent_task.due_date:
                 raise BadRequest('true')
             return super(TodoResource, self).obj_create(bundle, request=request, parent_task=parent_task)

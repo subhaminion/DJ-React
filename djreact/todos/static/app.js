@@ -10,7 +10,7 @@ function getshitdone(argument) {
 
 
 	task_id = $(argument).attr('task_id');
-	taskupdateurl = base_url + "/api/todo/" + task_id + "/";
+	taskupdateurl = base_url + "/api/v1/todo/" + task_id + "/";
 	$.ajax({
 		  type: 'PATCH',
 		  url: taskupdateurl,
@@ -29,7 +29,7 @@ function deleteThis(argument) {
 	d = new Date();
 	date = d.toLocaleString();
 	task_id = $(argument).attr('task_id');
-	deleteurl = base_url + "/api/todo/" + task_id + "/";
+	deleteurl = base_url + "/api/v1/todo/" + task_id + "/";
 	if ($(argument).text() === 'Delete') {
 		data  = JSON.stringify({'delete_time': date});
 	}else{
@@ -55,7 +55,7 @@ $( document ).ready(function() {
 	
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/todo/",
+		  url: base_url + "/api/v1/todo/",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	data.objects.forEach(function(item){
@@ -94,7 +94,7 @@ $( document ).ready(function() {
 function addNewTodo(data) {
 	$.ajax({
 		  type: 'POST',
-		  url: base_url + "/api/todo/",
+		  url: base_url + "/api/v1/todo/",
 		  data: JSON.stringify(data),
 		  contentType: "application/json;",
 		  success: function(data) {
@@ -138,7 +138,7 @@ $(document).on('keyup', '.addsubtask', function (e) {
 		
 		$.ajax({
 			  type: 'POST',
-			  url: base_url + "/api/todo/",
+			  url: base_url + "/api/v1/todo/",
 			  data: JSON.stringify(data),
 			  contentType: "application/json;",
 			  success: function(data) {
@@ -162,7 +162,7 @@ $(document).on('keyup','#search', function(e){
 	  	query = $('#search').val();
 	  	$.ajax({
 			  type: 'GET',
-			  url: base_url + "/api/todo/?title__icontains=" + query,
+			  url: base_url + "/api/v1/todo/?title__icontains=" + query,
 			  contentType: "application/json;",
 			  success: function(data) {
 			  	$('.toAppend li').remove();
@@ -182,7 +182,7 @@ $(document).on('click','#filterToday', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/todo/?due_date__day=" + dd,
+		  url: base_url + "/api/v1/todo/?due_date__day=" + dd,
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
@@ -199,7 +199,7 @@ $(document).on('click','#filterToday', function(e){
 $(document).on('click','#filterWeek', function(e){
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/todo/?due_date__gte=True",
+		  url: base_url + "/api/v1/todo/?due_date__gte=True",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
@@ -226,7 +226,7 @@ $(document).on('click','#filterNextweek', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/todo/?due_date__gte="+date+"&due_date__lt="+dateplus7+"",
+		  url: base_url + "/api/v1/todo/?due_date__gte="+date+"&due_date__lt="+dateplus7+"",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
@@ -250,7 +250,7 @@ $(document).on('click','#filterOverdue', function(e){
 
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/todo/?due_date__lt="+ today +"",
+		  url: base_url + "/api/v1/todo/?due_date__lt="+ today +"",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
