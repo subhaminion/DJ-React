@@ -144,6 +144,9 @@ $(document).on('keyup', '.addsubtask', function (e) {
 			  success: function(data) {
 			  		$(".task_id" + parent_tas_id + " ul").append(" <li class='dir'>" + data.title + "("+ data.due_date +")<button task_id='"+data.id+"' onclick='getshitdone(this)'>Done</button></li>");
 			  },
+			  error: function (data) {
+			  		alert('Subtask date can not be higher than parent task!!!');
+			  }
 		});
 	}
 });

@@ -29,6 +29,10 @@ class TodoResource(ModelResource):
         if bundle.data.get('parent_task'):
             parent_task_id = bundle.data.get('parent_task')
             parent_task = Todo.objects.get(id=parent_task_id)
+            subtask_duedate = datetime.datetime.strptime(bundle.data.get('due_date').encode(), "%Y-%m-%d").date()
+            
+            if subtask_duedate > parent_task.due_date:
+                raise BadRequest('true')
             return super(TodoResource, self).obj_create(bundle, request=request, parent_task=parent_task)
         return super(TodoResource, self).obj_create(bundle, request=request, **kwargs)
 
