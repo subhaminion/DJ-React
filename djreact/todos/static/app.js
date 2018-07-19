@@ -1,13 +1,12 @@
 var base_url = "http://127.0.0.1:8000";
 
 function getshitdone(argument) {
-	console.log($(argument).text());
-	if ($(argument).text() === 'Completed'){
-		data = JSON.stringify({'completed': false})
-	}else {
-		data = JSON.stringify({'completed': true})
-	}
 
+	if ($(argument).is(":checked")){
+		data = JSON.stringify({'completed': true})
+	}else {
+		data = JSON.stringify({'completed': false})
+	}
 
 	task_id = $(argument).attr('task_id');
 	taskupdateurl = base_url + "/api/v1/todo/" + task_id + "/";
@@ -19,8 +18,6 @@ function getshitdone(argument) {
 		  data: data,
 		  success: function(data) {
 		  	console.log(data);
-		  		var btntext = data.completed ? "Completed" : "Pending";
-		  		$(argument).text(btntext);
 		  },
 	});
 }
@@ -51,6 +48,37 @@ function deleteThis(argument) {
 	});
 }
 
+function addSubtask(argument) {
+	var title = prompt("Task Name", "Get a Haircut");
+    var date = prompt("Due Date", "YYYY-mm-dd");
+    if (title != null && date != null) {
+        data = {
+			"title": title,
+			"sub_task": true,
+			"parent_task": $(argument).attr('parent_task'),
+			"due_date": date
+		};
+		parent_tas_id = $(argument).attr('parent_task');
+		console.log(data);
+		$.ajax({
+			  type: 'POST',
+			  url: base_url + "/api/v1/todo/",
+			  data: JSON.stringify(data),
+			  contentType: "application/json;",
+			  success: function(data) {
+			  		var subtaskwithcomplete = "<div class='checkbox'> <label><input type='checkbox' task_id='"+data.id+"' onclick='getshitdone(this)' checked/>" + data.title + "("+ data.due_date +")</label> </div>";
+			  		var subtaskwithoutcomplete = "<div class='checkbox'> <label><input type='checkbox' task_id='"+data.id+"' onclick='getshitdone(this)' />" + data.title + "("+ data.due_date +")</label> </div>";
+			  		var toAppend = data.completed ? subtaskwithcomplete : subtaskwithoutcomplete;
+			  		$(".task_id" + parent_tas_id + " ul").append(toAppend);
+			  		// $(".task_id" + parent_tas_id + " ul").append(" <li class='dir'>" + data.title + "("+ data.due_date +")<button task_id='"+data.id+"' onclick='getshitdone(this)'>Done</button></li>");
+			  },
+			  error: function (data) {
+			  		alert('Subtask date can not be higher than parent task!!!');
+			  }
+		});
+    }
+}
+
 $( document ).ready(function() {
 	
 	$.ajax({
@@ -60,27 +88,32 @@ $( document ).ready(function() {
 		  success: function(data) {
 		  	data.objects.forEach(function(item){
 		  		if (item.subtask != '' && !item.sub_task) {
-		  			var btntext = item.completed ? "Completed" : "Pending";
 		  			var deletebtntext = item.delete_time ? "Undelete" : "Delete";
-		  			$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>"+deletebtntext+"</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title + " ("+item.due_date+")</label><a href='#' parent_task="+ item.id +" onclick='addSubtask(this)'> <span class='glyphicon glyphicon-plus-sign'></span> </a><button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+					var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title + "("+item.due_date+")</label><a href='#' parent_task="+ item.id +" onclick='addSubtask(this)'> <span class='glyphicon glyphicon-plus-sign'></span> </a><button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+		  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+		  			$(".toAppend").append(toAppend);
 		  			item.subtask.forEach(function(index) {
 						subtaskFetchurl =  base_url + index;
-
 		  				$.ajax({
 							  type: 'GET',
 							  url: subtaskFetchurl,
 							  contentType: "application/json;",
 							  dataType: 'json',
 							  success: function(data) {
-							  		var btntext = item.completed ? "Completed" : "Pending";
-							  		$(".task_id" + item.id + " ul").append("<li class='dir'>" + data.title + "("+ data.due_date +")<button task_id='"+data.id+"' onclick='getshitdone(this)'>"+btntext+"</button></li>");
+							  		var subtaskwithcomplete = "<div class='checkbox'> <label><input type='checkbox' task_id='"+data.id+"' onclick='getshitdone(this)' checked/>" + data.title + " ("+ data.due_date +")</label> </div>";
+							  		var subtaskwithoutcomplete = "<div class='checkbox'> <label><input type='checkbox' task_id='"+data.id+"' onclick='getshitdone(this)' />" + data.title + " ("+ data.due_date +")</label> </div>";
+							  		var toAppend = data.completed ? subtaskwithcomplete : subtaskwithoutcomplete;
+							  		$(".task_id" + item.id + " ul").append(toAppend);
 							  },
 						});	  				
 		  			});
 		  		} else if(!item.sub_task && item.subtask == '') {
-		  			var btntext = item.completed ? "Completed" : "Pending";
 		  			var deletebtntext = item.delete_time ? "Undelete" : "Delete";
-		  			$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>"+deletebtntext+"</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title +" ("+item.due_date+") </label><a href='#' parent_task="+ item.id +" onclick='addSubtask(this)'> <span class='glyphicon glyphicon-plus-sign'></span> </a><button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+					var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +" ("+item.due_date+") </label><a href='#' parent_task="+ item.id +" onclick='addSubtask(this)'> <span class='glyphicon glyphicon-plus-sign'></span> </a><button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+		  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+		  			$(".toAppend").append(toAppend);
 		  		}
 		  	});
 		  },
@@ -97,9 +130,10 @@ function addNewTodo(data) {
 		  url: base_url + "/api/v1/todo/",
 		  data: JSON.stringify(data),
 		  contentType: "application/json;",
-		  success: function(data) {
-		  		var deletebtntext = data.delete_time ? "Undelete" : "Delete";
-		  		$(".toAppend").append("<li class='dir task_id"+data.id+"'' task_id='"+data.id+"'>"+ data.title +"("+ data.due_date +")<button task_id='"+data.id+"' onclick='getshitdone(this)'>Done</button><button task_id='"+data.id+"' onclick='deleteThis(this)'>"+deletebtntext+"</button><br><input type='text' placeholder='Add subtask' parent_task='"+data.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  success: function(item) {
+		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
+	  			var toAppend = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +" ("+item.due_date+")</label><a href='#' parent_task="+ item.id +" onclick='addSubtask(this)'> <span class='glyphicon glyphicon-plus-sign'></span> </a><button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+	  			$(".toAppend").append(toAppend);
 		  },
 		  error: function(data) {
 			successmessage = 'Error';
@@ -108,56 +142,22 @@ function addNewTodo(data) {
 }
 
 
-$("#todo_add").on('keyup', function (e) {
+$(".add-todo").on('keyup', function (e) {
 	if (e.keyCode == 13) {
-		if($('#todo_add').val() === '' || $('.date').val() === ''){
+		if($('#todo_add_title').val() === '' || $('.date').val() === ''){
 			alert('Please enter Title and Date');
 			$(this).focus();
 		}
 		data = {
-			"title": $('#todo_add').val(),
+			"title": $('#todo_add_title').val(),
 			"due_date": $('.date').val().split("-").reverse().join("-")
 		};
 		addNewTodo(data)
 	}
 });
 
-$(document).on('keyup', '.addsubtask', function (e) {
-	if (e.keyCode == 13) {
-		if($(this).val() === '' || $(this).next('input').val() === ''){
-			alert('Please enter Title and Date');
-			$(this).focus();
-		}
-		data = {
-			"title": $(this).val(),
-			"sub_task": true,
-			"parent_task": $(this).attr('parent_task'),
-			"due_date": $(this).next('input').val()
-		};
-		parent_tas_id = $(this).attr('parent_task');
-		
-		$.ajax({
-			  type: 'POST',
-			  url: base_url + "/api/v1/todo/",
-			  data: JSON.stringify(data),
-			  contentType: "application/json;",
-			  success: function(data) {
-			  		$(".task_id" + parent_tas_id + " ul").append(" <li class='dir'>" + data.title + "("+ data.due_date +")<button task_id='"+data.id+"' onclick='getshitdone(this)'>Done</button></li>");
-			  },
-			  error: function (data) {
-			  		alert('Subtask date can not be higher than parent task!!!');
-			  }
-		});
-	}
-});
 
-// function generateSubtask(argument) {
-// 	$(argument).children("li").remove();
-// 	$(argument).append('<li class="dir">lol</li>');
-// }
-
-
-$(document).on('keyup','#search', function(e){
+$(document).on('keyup', '#search', function(e){
 	if (e.keyCode == 13) {
 	  	query = $('#search').val();
 	  	$.ajax({
@@ -167,9 +167,12 @@ $(document).on('keyup','#search', function(e){
 			  success: function(data) {
 			  	$('.toAppend li').remove();
 			  	data.objects.forEach(function(item){
-			  		console.log(item.title);
-			  		var btntext = item.completed ? "Completed" : "Pending";
-			  		$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>Delete</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+			  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
+		  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+					var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+		  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+		  			$(".toAppend").append(toAppend);
+
 			  	});
 			  },
 		});
@@ -188,9 +191,11 @@ $(document).on('click','#filterToday', function(e){
 		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
-		  		console.log(item.title);
-		  		var btntext = item.completed ? "Completed" : "Pending";
-		  		$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>Delete</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
+	  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+				var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+	  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+	  			$(".toAppend").append(toAppend);
 		  	});
 		  },
 	});
@@ -199,15 +204,17 @@ $(document).on('click','#filterToday', function(e){
 $(document).on('click','#filterWeek', function(e){
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/v1/todo/?due_date__gte=True",
+		  url: base_url + "/api/v1/todo/?due_date=True",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
-		  		console.log(item.title);
-		  		var btntext = item.completed ? "Completed" : "Pending";
-		  		$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>Delete</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
+	  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+				var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+	  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+	  			$(".toAppend").append(toAppend);
 		  	});
 		  },
 	});
@@ -215,26 +222,19 @@ $(document).on('click','#filterWeek', function(e){
 
 
 $(document).on('click','#filterNextweek', function(e){
-
-
-	var nextMonday = new Date();
-	nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
-	date = nextMonday.getFullYear() + '-' + nextMonday.getMonth() + '-' + nextMonday.getDate()
-	dateplus7 = nextMonday.getFullYear() + '-' + nextMonday.getMonth() + '-' + (nextMonday.getDate() + 7)
-	console.log(date);
-
-
 	$.ajax({
 		  type: 'GET',
-		  url: base_url + "/api/v1/todo/?due_date__gte="+date+"&due_date__lt="+dateplus7+"",
+		  url: base_url + "/api/v1/todo/?due_date__gte=True",
 		  contentType: "application/json;",
 		  success: function(data) {
 		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
-		  		console.log(item.title);
-		  		var btntext = item.completed ? "Completed" : "Pending";
-		  		$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>Delete</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
+	  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+				var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+	  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+	  			$(".toAppend").append(toAppend);
 		  	});
 		  },
 	});
@@ -256,17 +256,12 @@ $(document).on('click','#filterOverdue', function(e){
 		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
-		  		console.log(item.title);
-		  		var btntext = item.completed ? "Completed" : "Pending";
-		  		$(".toAppend").append("<li class='dir task_id"+item.id+"'' task_id='"+item.id+"'>"+ item.title +"("+ item.due_date +")<button task_id='"+item.id+"' onclick='getshitdone(this)'>"+btntext+"</button><button task_id='"+item.id+"' onclick='deleteThis(this)'>Delete</button><br><input type='text' placeholder='Add subtask' parent_task='"+item.id+"' name='subtask' class='addsubtask'><input type='date' class='date'><ul></ul></li>");
+		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
+	  			var appendwithcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' checked />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+				var appendwithoutcomplete = "<li class='ui-state-default task_id"+item.id+"' task_id='"+item.id+"'> <div class='checkbox'> <label><input type='checkbox' task_id='"+item.id+"' onclick='getshitdone(this)' />"+ item.title +"</label> <button task_id='"+item.id+"' onclick='deleteThis(this)' class='btn btn-danger btn-xs'>"+deletebtntext+"</button> </div> <ul> </ul> </li>";
+	  			var toAppend = item.completed ? appendwithcomplete : appendwithoutcomplete;
+	  			$(".toAppend").append(toAppend);
 		  	});
 		  },
 	});
  });
-
-
-// $(document).on('ready', function(e){
-// 	$('input[type="date"]').change(function(){
-// 	   alert(this.value.split("-").reverse().join("-")); 
-// 	});
-//  });

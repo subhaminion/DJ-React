@@ -4,12 +4,13 @@
   	<title>Todo</title>
   	{% load staticfiles %}
   	<script src="{% static 'jquery.min.js' %}"></script>
-  	<link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="{% static 'bootstrap.min.js' %}"></script>
+  	<link rel="stylesheet" href="{% static 'style.css' %}">
 
 </head>
 <body>
-	<div class="form-group">
+	<!-- <div class="form-group">
       <input type="text" class="form-control" id="todo_add" placeholder="What Needs to done??" name="todo">
       By when: <input type='date' class="date">
   </div>
@@ -22,7 +23,29 @@
       <button class="btn" onClick="window.location.reload()">Reset</button>
   </div>
 
-	<ul class="toAppend"></ul>
+	<ul class="toAppend"></ul> -->
+<div class="container">
+  <div class="row">
+      <div class="col-md-12">
+          <div class="todolist not-done">
+            <h1>Todos</h1>
+            <input type="text" class="form-control add-todo" id="todo_add_title" placeholder="Add todo">
+            <input type='date' class="date form-control add-todo">
+            
+            <hr>
+            <input type="text" class="form-control" id="search" placeholder="Search By title">
+            <hr>
+            <button class="btn" id="filterToday">Today</button>
+            <button class="btn" id="filterWeek">This Week</button>
+            <button class="btn" id="filterNextweek">Next Week</button>
+            <button class="btn" id="filterOverdue">Overdue</button>
+            <button class="btn" onClick="window.location.reload()">Reset</button>
+            <hr>
+            <ul id="sortable" class="list-unstyled toAppend"></ul>
+          </div>
+      </div>
+  </div>
+</div>
 </body>
 <script src="{% static 'app.js' %}"></script>
 </html>

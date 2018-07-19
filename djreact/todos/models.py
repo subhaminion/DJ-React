@@ -6,7 +6,6 @@ from django.db import models
 # http://127.0.0.1:8000/api/todo/?due_date__gte=2018-07-12&due_date__lt=2018-07-19 == next week
 # http://127.0.0.1:8000/api/todo/?due_date__lt=2018-07-02 == overdue
 
-
 class Todo(models.Model):
     title = models.CharField(max_length=250)
     creation_date = models.DateField(auto_now=True)

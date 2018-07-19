@@ -49,7 +49,10 @@ class TodoResource(ModelResource):
         return super(TodoResource, self).obj_create(bundle, request=request, **kwargs)
 
     def apply_filters(self, request, applicable_filters):
+        if applicable_filters.get('due_date__exact'):
+            thisWeek = datetime.datetime.utcnow().isocalendar()[1]
+            return Todo.objects.filter(due_date__week=thisWeek)
         if applicable_filters.get('due_date__gte'):
             thisWeek = datetime.datetime.utcnow().isocalendar()[1]
-            return Todo.objects.filter(due_date__week=thisWeek)  
+            return Todo.objects.filter(due_date__week=thisWeek+1)
         return self.get_object_list(request).filter(**applicable_filters)
