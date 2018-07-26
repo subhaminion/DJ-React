@@ -59,7 +59,6 @@ function addSubtask(argument) {
 			"due_date": date
 		};
 		parent_tas_id = $(argument).attr('parent_task');
-		console.log(data);
 		$.ajax({
 			  type: 'POST',
 			  url: base_url + "/api/v1/todo/",
@@ -70,7 +69,6 @@ function addSubtask(argument) {
 			  		var subtaskwithoutcomplete = "<div class='checkbox'> <label><input type='checkbox' task_id='"+data.id+"' onclick='getshitdone(this)' />" + data.title + "("+ data.due_date +")</label> </div>";
 			  		var toAppend = data.completed ? subtaskwithcomplete : subtaskwithoutcomplete;
 			  		$(".task_id" + parent_tas_id + " ul").append(toAppend);
-			  		// $(".task_id" + parent_tas_id + " ul").append(" <li class='dir'>" + data.title + "("+ data.due_date +")<button task_id='"+data.id+"' onclick='getshitdone(this)'>Done</button></li>");
 			  },
 			  error: function (data) {
 			  		alert('Subtask date can not be higher than parent task!!!');
@@ -188,7 +186,6 @@ $(document).on('click','#filterToday', function(e){
 		  url: base_url + "/api/v1/todo/?due_date__day=" + dd,
 		  contentType: "application/json;",
 		  success: function(data) {
-		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
 		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
@@ -207,7 +204,6 @@ $(document).on('click','#filterWeek', function(e){
 		  url: base_url + "/api/v1/todo/?due_date=True",
 		  contentType: "application/json;",
 		  success: function(data) {
-		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
 		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
@@ -227,7 +223,6 @@ $(document).on('click','#filterNextweek', function(e){
 		  url: base_url + "/api/v1/todo/?due_date__gte=True",
 		  contentType: "application/json;",
 		  success: function(data) {
-		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
 		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
@@ -253,7 +248,6 @@ $(document).on('click','#filterOverdue', function(e){
 		  url: base_url + "/api/v1/todo/?due_date__lt="+ today +"",
 		  contentType: "application/json;",
 		  success: function(data) {
-		  	console.log(data);
 		  	$('.toAppend li').remove();
 		  	data.objects.forEach(function(item){
 		  		var deletebtntext = item.delete_time ? "Undelete" : "Delete";
