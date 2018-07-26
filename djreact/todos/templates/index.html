@@ -4,26 +4,12 @@
   	<title>Todo</title>
   	{% load staticfiles %}
   	<script src="{% static 'jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
     <script src="{% static 'bootstrap.min.js' %}"></script>
   	<link rel="stylesheet" href="{% static 'style.css' %}">
 
 </head>
 <body>
-	<!-- <div class="form-group">
-      <input type="text" class="form-control" id="todo_add" placeholder="What Needs to done??" name="todo">
-      By when: <input type='date' class="date">
-  </div>
-  <div class="form-group">
-      <input type="text" class="form-control" id="search" placeholder="Search By title">
-      <button class="btn" id="filterToday">Today</button>
-      <button class="btn" id="filterWeek">This Week</button>
-      <button class="btn" id="filterNextweek">Next Week</button>
-      <button class="btn" id="filterOverdue">Overdue</button>
-      <button class="btn" onClick="window.location.reload()">Reset</button>
-  </div>
-
-	<ul class="toAppend"></ul> -->
 <div class="container">
   <div class="row">
       <div class="col-md-12">
