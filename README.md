@@ -24,4 +24,5 @@ $ pipenv shell
 ```
 
 You can see the API now at [http://127.0.0.1:8000/api](http://127.0.0.1:8000/api).
+
 You can interact with the frontend at [http://127.0.0.1:8000/api](http://127.0.0.1:8000/index).
