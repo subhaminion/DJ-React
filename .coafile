@@ -1,0 +1,4 @@
+[cli]
+bears = SpaceConsistencyBear,
+files = djreact/*.py
+use_spaces = True
